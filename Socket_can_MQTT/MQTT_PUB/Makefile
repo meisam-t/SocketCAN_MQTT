@@ -1,0 +1,9 @@
+all: can_mqtt_slcan0Pub.c
+	gcc -L/home/jaydev/MQTT/org.eclipse.paho.mqtt.c/build/output can_mqtt_slcan0Pub.c Cansendrecv.c pub.c -lpaho-mqtt3c -lpthread -o pub
+	@echo  Make success ...
+	@echo  MQTT publisher files succesfully compiled ....  
+	@echo run ./pub.sh
+
+clean:
+	$(RM) pub
+	@echo  file has been removed ...

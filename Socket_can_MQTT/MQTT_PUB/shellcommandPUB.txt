@@ -1,0 +1,17 @@
+./pub serverid: 3 mqttserver: 192.168.100.123 numberofCANID: "14" canidlist:  401 402 403 1F0 27D 270 27F 1A0 4A0 169 110 119 180 190 alwaysendCANIDlist: 270 27F 4A0
+
+
+
+
+
+command 2 : 
+
+./pub serverid: 3 mqttserver: 192.168.100.123 numberofCANID: "14" canidlist:  401 402 403 1F0 27D 270 27F 1A0 4A0 169 110 119 180 190 numofalwayscanID "3" alwaysendCANIDlist: 270 27F 4A0
+
+
+
+command 
+
+
+./pub serverid: 3 mqttserver: 192.168.100.123 numberofCANID: "14" canidlist:  401 402 403 1F0 27D 270 27F 1A0 4A0 169 110 119 180 190 numofalwayscanID "3" alwaysendCANIDlist: 270 27F 4A0
+

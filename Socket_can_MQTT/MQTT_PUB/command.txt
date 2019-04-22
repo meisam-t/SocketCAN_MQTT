@@ -1,0 +1,30 @@
+gcc -L/home/jaydev/MQTT/org.eclipse.paho.mqtt.c/build/output can_mqtt_slcan0Pub.c Cansendrecv.c pub.c -lpaho-mqtt3c -lpthread -o pub
+
+
+
+shell command : 
+
+./pub serverid: 3 mqttserver: 192.168.100.123 numberofCANID: "14" canidlist:  401 402 403 1F0 27D 270 27F 1A0 4A0 169 110 119 180 190 numofalwayscanID "3" alwaysendCANIDlist: 270 27F 4A0
+
+
+
+./pub 3 192.168.100.123 401,402,403,1F0,27D,270,27F,1A0,4A0,169,110,119,180,190 1,27F,4A0
+
+i= 0;
+char *canlistcopy[100];
+for (int j=0;j<strlenght(argv[4]) ; j++);
+if (argv[4][1] != ",") {
+	canlistcopy[i] = argv[4][i];
+	i++;
+}
+eles {
+	i++;
+}
+
+SUB:
+
+gcc -L/home/jaydev/MQTT/org.eclipse.paho.mqtt.c/build/output can_mqtt_slcan0Sub.c Cansendrecv.c sub.c pub.c -lpaho-mqtt3c -lpthread -o sub
+
+PUB:
+
+gcc -L/home/jaydev/MQTT/org.eclipse.paho.mqtt.c/build/output can_mqtt_slcan0Pub.c Cansendrecv.c pub.c -lpaho-mqtt3c -lpthread -o pub

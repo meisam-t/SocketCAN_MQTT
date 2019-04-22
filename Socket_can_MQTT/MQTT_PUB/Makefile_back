@@ -1,0 +1,33 @@
+COMPILE    = gcc
+OBJ_CREATE = -O
+
+
+TARGET_FOLDER = $(pwd)
+TARGET_MAIN   = $(pwd)
+LIBS          = -lpthread -lpaho-mqtt3c
+INCLUDES      = 
+LDFLAGS       = -L/home/jaydev/MQTT/org.eclipse.paho.mqtt.c/build/output
+SRCS = can_mqtt_slcan0Pub.c Cansendrecv.c pub.c
+OBJS = pub.o 
+
+$(BIN): $(OBJS)
+    @echo Linking $@
+    @$(CXX) $^ $(LDFLAGS) $(LIBS) -o $@
+
+.cpp.o:
+    @echo Compiling $<
+    @$(CXX) -c $(CXXFLAGS) $(INCPATH) $<
+
+all: $(TARGET_MAIN)
+
+$(TARGET_MAIN): $(OBJS)
+	$(COMPILE) -lm $(OBJS) $(LDFLAGS) $(LIBS) -o $(TARGET_MAIN)
+#
+clean:
+	-rm -f $(TARGET_MAIN) $(OBJS)
+
+
+pub.o:can_mqtt_slcan0Pub.c
+	gcc  can_mqtt_slcan0Pub.c Cansendrecv.c pub.c -o pub
+
+
