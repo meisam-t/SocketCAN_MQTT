@@ -22,4 +22,4 @@ apt-get install libssl-dev
 apt-get install doxygen graphviz
 ```
 ## Problem statement 
-### After Sending data from CAN to MQTT, MQTT sends the message back to the CAN network. Translating the data from  can_send, results fault values. I think changing data to binaries and send data in binaries will solve this issue. 
+#### After Sending data from CAN to MQTT, MQTT sends the message back to the CAN network. Translating the data from  can_send, results fault values. I think changing data to binaries and send data in binaries will solve this issue. 
