@@ -4,6 +4,7 @@
 #include <MQTTClient.h>
 #include "sub.h"
 #include "Cansendrecv.h"
+#include "hextobin.h"
 
 #define ADDRESS     "tcp://localhost:1883" //"tcp://192.168.13.101:1883" 
 #define CLIENTID    "ExampleClientSub"
@@ -13,7 +14,7 @@
 #define TIMEOUT     10000L
 
 void append(char* s, char c);
-unsigned char data[8];
+unsigned char data[16];
 char *topics;
 char can_ID[3];
 char *can_send_data;
@@ -25,6 +26,9 @@ int ct=0;
 char d1[2];
 char d2[2];
 char d3[2];
+char dumb[20]="";
+int c_count =0; 
+//char tmp[20][20] = {"",""};
 
 volatile MQTTClient_deliveryToken deliveredtoken;
 void append(char* s, char c)
@@ -34,27 +38,6 @@ void append(char* s, char c)
         s[len+1] = '\0';
 }
 
-
-
-char* stringToBinary(char s[16]) {
-    if(s == NULL)
-		return 0; 
-    size_t len = strlen(s);
-    char *binary = malloc(len*8 + 1); // each char is one byte (8 bits) and + 1 at the end for null terminator
-    binary[0] = '\0';
-    for(size_t i = 0; i < len; ++i) {
-        char ch = s[i];
-        for(int j = 7; j >= 0; --j){
-            if(ch & (1 << j)) {
-                strcat(binary,"1");
-            } else {
-                strcat(binary,"0");
-            }
-        }
-    }
-    printf(" binary %s", binary);
-    return binary;
-}
 void deliveredSub(void *context, MQTTClient_deliveryToken dt)
 {
 	printf("Message with token value %d delivery confirmed\n", dt);
@@ -88,7 +71,7 @@ int msgarrvdSub(void *context, char *topicName, int topicLen, MQTTClient_message
 	//printf(" \n str [6]:  . . . %c \n",copyStr[6]);
 
 /// can send 
-	can_send(1,123,can_send_data);
+	//can_send(1,123,can_send_data);
 	printf(" Can sent Data Has been alread sent . . .\n");
 
 ///
@@ -141,19 +124,24 @@ void ret_can_id(char (*can_msg_in)[]){
 	char (*can_msg_in_cpy)[] = *can_msg_in;
 	perror("Ret Can ID ");
 	int k=0;
-	printf(" msg 1 is----------------------------------------------->  %c\n\n",(*can_msg_in_cpy)[1]);
+	int r;
+	printf(" msg 1 is---------------------str len message %d -------------------------->  %c\n\n",strlen(can_msg_in),(*can_msg_in)[1]);
 		//while(*can_msg_in != '\0')  {
-		for (k=0; k< strlen( can_msg_in); k++){ 
-			printf(" Messasge  %c \n", (*can_msg_in)[k]);
+		for (k=0; k< strlen(can_msg_in); k++){ 
+			printf(" Messasge at %d  %c \n", k, (*can_msg_in)[k] );
 			// getting the serial number 
 			if ((*can_msg_in)[k]== '#'){
+				perror("first if \n");
 				if (first_sharp == -1){
+					perror("second if\n");
 					first_sharp = k;
-					can_SerialNumber=(*can_msg_in)[k-1];
+					can_SerialNumber= &(*can_msg_in)[k-1];
+					
 					printf(" first sharp has been found at --------- > %d \n\n", k);
 				}
 				else
 				{
+					perror("else \n");
 					second_sharp = k;
 					int z=0;
 					//getting the CAN ID
@@ -161,35 +149,40 @@ void ret_can_id(char (*can_msg_in)[]){
 						can_ID[z]=(*can_msg_in)[p];
 						z++;
 					}
-					printf(" second  sharp has found at --------- > %d\n\n", second_sharp);
+					printf(" second  sharp has found at --------- ---:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::> %d can id %s\n\n", second_sharp, can_ID);
 				 }
 				 
 		
-		}
-		ct++;
-		int c_count =0;
+		}else {
+		
+		
+		int sc= (int)second_sharp +1;
 		//getting the Can data
-		for (int k=second_sharp+1; k< strlen(can_msg_in_cpy)-1; k++){
-			// printf("Temps%s", stringToBinary(&(*can_msg_in)[k]));
-			 char  *temp1 = stringToBinary(&(*can_msg_in)[k]);
-			 char  *temp2 = stringToBinary(&(*can_msg_in)[k+1]);
-			// printf("Temps %s/t%s", temp1, temp2);
-			 strcat(temp1,temp2);
-			 
-			 char c = strtol(temp1, 0, 2);
-			 can_send_data[c_count] = c;
-			c_count ++;
-			//printf("Temps %s", &(*can_msg_in)[k]);
-			//break;
+		size_t np = sizeof(dumb);
+		memset(dumb, 0, np*sizeof(dumb[0]));
+		if (k> 5){
+		for (k=6; k< strlen(can_msg_in_cpy); k++){
+			//printf("Temps ----->>>>>-----%s", (*can_msg_in)[k]));
+			//printf("second sharp %d ", sc);
+			
+			//if ( k > second_sharp) {
+				
+				dumb[c_count] = (*can_msg_in_cpy)[k];
+				printf(" Dumb value[%d] = %s ========= >>>>> \n",c_count, &dumb[c_count]);
+				c_count ++;
+		//	}
 			
 		}
-		
+		}
 	}
-	printf(" CAN SEND DATA -----******************************--->>>>>>------ > %s \n\n", &can_send_data);
-	printf(" Serial Number is  --->>>>>>------ > %c \n\n", can_SerialNumber);
+}
+	hextobin(dumb,c_count);
+	c_count = 0;
+	printf(" CAN SEND DATA -----******************************--->>>>>>------ > %s \n\n", dumb);
+	printf(" Serial Number is  %c--->>>>>>------ >  \n\n", *can_SerialNumber);
 	int c=0;
-	printf(" ID is -====>>>> %s\n",can_ID); 
-	printf(" Number o f data  %d", k);
+	printf(" CAN ID is -====>>>> %s\n\n",can_ID); 
+	printf(" Number o f data  %d \n", k);
 	
 	
 
