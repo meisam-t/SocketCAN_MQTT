@@ -1,4 +1,4 @@
-all: can_mqtt_slcan0Pub.c
+all: can_mqtt_slcan0Sub.c
 	gcc -L/home/jaydev/MQTT/org.eclipse.paho.mqtt.c/build/output can_mqtt_slcan0Sub.c Cansendrecv.c sub.c pub.c hextobin.c -lpaho-mqtt3c -lpthread -o sub
 
 	@echo  Make success ...
